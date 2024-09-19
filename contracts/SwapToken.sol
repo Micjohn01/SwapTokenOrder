@@ -54,5 +54,15 @@ contract SwapToken {
         delete orders[_orderId];
     }
 
-    
+
+    function cancelOrder(uint256 _orderId) external {
+        TokenOrder storage order = orders[_orderId];
+        require(order.seller == msg.sender, "Not The Order Creator");
+
+        IERC20(order.tokenToSell).transfer(msg.sender, order.amountToSell);
+
+        emit OrderCancelled(_orderId);
+        delete orders[_orderId];
+    }
+
 }
