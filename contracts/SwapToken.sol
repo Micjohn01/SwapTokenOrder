@@ -41,5 +41,18 @@ contract SwapToken {
         emit OrderCreated(nextOrderId, msg.sender, _tokenToSell, _amountToSell, _tokenToBuy, _amountToBuy);
         nextOrderId++;
     }
+
+
+    function fulfillOrder(uint256 _orderId) external {
+        TokenOrder storage order = orders[_orderId];
+        require(order.seller != address(0), "Zero Address Detected");
+
+        IERC20(order.tokenToBuy).transferFrom(msg.sender, order.seller, order.amountToBuy);
+        IERC20(order.tokenToSell).transfer(msg.sender, order.amountToSell);
+
+        emit OrderFulfilled(_orderId, msg.sender);
+        delete orders[_orderId];
+    }
+
     
 }
